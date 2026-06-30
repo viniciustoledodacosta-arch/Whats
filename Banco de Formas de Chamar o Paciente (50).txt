@@ -1,0 +1,59 @@
+Formais
+01. Sr(a). {NOME},
+02. Sr(a). {NOME},
+03. Prezado(a) Sr(a). {NOME},
+04. Prezado(a) paciente {NOME},
+05. Prezado(a), {NOME},
+06. Caro(a) Sr(a). {NOME},
+07. Ao(À) Sr(a). {NOME},
+08. {NOME},
+09. Sr(a). {PRIMEIRO_NOME},
+10. Prezado(a) {NOME},
+________________________________________
+Institucionais
+11. Paciente {NOME},
+12. Ao(À) paciente {NOME},
+13. {NOME}, bom recebê-lo(a) por aqui.
+14. {NOME}, esperamos encontrá-lo(a) bem.
+15. {NOME}, tudo bem?
+16. {NOME}, como vai?
+17. {NOME}, esperamos que esteja bem.
+18. {NOME}, desejamos que esteja tudo bem.
+19. {NOME}, recebemos seu cadastro para contato.
+20. {NOME}, estamos entrando em contato.
+________________________________________
+Humanizadas
+21. Olá, {NOME},
+22. Olá, Sr(a). {NOME},
+23. Olá, {PRIMEIRO_NOME},
+24. Bom falar com você, {NOME}.
+25. É um prazer falar com você, {NOME}.
+26. Gostaríamos de falar com você, {NOME}.
+27. Estamos entrando em contato com você, {NOME}.
+28. Esperamos que esteja bem, {NOME}.
+29. Tudo bem com você, {NOME}?
+30. Como vai você, {NOME}?
+________________________________________
+Respeitosas
+31. Dona {PRIMEIRO_NOME},
+32. Seu {PRIMEIRO_NOME},
+33. Dona {NOME},
+34. Seu {NOME},
+35. Prezada Dona {PRIMEIRO_NOME},
+36. Prezado Seu {PRIMEIRO_NOME},
+37. Prezada Dona {NOME},
+38. Prezado Seu {NOME},
+________________________________________
+Neutras
+39. {NOME},
+40. {NOME},
+41. {PRIMEIRO_NOME},
+42. {PRIMEIRO_NOME},
+43. Prezado(a) {PRIMEIRO_NOME},
+44. Caro(a) {PRIMEIRO_NOME},
+45. {NOME}, seja bem-vindo(a) ao nosso contato.
+46. {NOME}, esta mensagem é destinada a você.
+47. {NOME}, gostaríamos de compartilhar algumas informações.
+48. {NOME}, seguem algumas informações importantes.
+49. {NOME}, temos um comunicado para você.
+50. {NOME}, enviamos esta mensagem especialmente para você.

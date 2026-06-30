@@ -1,0 +1,131 @@
+01.
+Hospital de Clínicas de Porto Alegre (HCPA)
+Serviço de Radiologia
+________________________________________
+02.
+HCPA
+Serviço de Radiologia
+________________________________________
+03.
+Serviço de Radiologia do HCPA
+________________________________________
+04.
+Radiologia do Hospital de Clínicas de Porto Alegre
+________________________________________
+05.
+Radiologia do HCPA
+________________________________________
+06.
+Setor de Radiologia do HCPA
+________________________________________
+07.
+Setor de Ecografia do HCPA
+________________________________________
+08.
+Equipe do Serviço de Radiologia do HCPA
+________________________________________
+09.
+Equipe da Radiologia do HCPA
+________________________________________
+10.
+Equipe do Setor de Ecografia do HCPA
+________________________________________
+Equipe Responsável
+11.
+Equipe responsável pelos avisos de exames da Radiologia do HCPA
+________________________________________
+12.
+Equipe responsável pelas orientações de exames da Radiologia do HCPA
+________________________________________
+13.
+Equipe responsável pela comunicação com pacientes da Radiologia do HCPA
+________________________________________
+14.
+Equipe responsável pelos avisos aos pacientes da Radiologia do HCPA
+________________________________________
+15.
+Equipe responsável pelas orientações aos pacientes da Radiologia do HCPA
+________________________________________
+16.
+Equipe responsável pelos comunicados da Radiologia do HCPA
+________________________________________
+17.
+Equipe da Radiologia responsável pelos avisos dos exames
+________________________________________
+18.
+Equipe da Radiologia responsável pelas orientações dos exames
+________________________________________
+19.
+Equipe da Radiologia responsável pela comunicação dos exames
+________________________________________
+20.
+Equipe da Radiologia responsável pelo contato com os pacientes
+________________________________________
+21.
+Somos da equipe responsável pelos avisos de exames da Radiologia do HCPA.
+________________________________________
+22.
+Somos da equipe responsável pelas orientações de exames da Radiologia do HCPA.
+________________________________________
+23.
+Somos da equipe da Radiologia do HCPA.
+________________________________________
+24.
+Somos da equipe do Serviço de Radiologia do HCPA.
+________________________________________
+25.
+Entramos em contato pela equipe da Radiologia do HCPA.
+________________________________________
+26.
+Esta mensagem é enviada pela equipe da Radiologia do HCPA.
+________________________________________
+27.
+Este contato é realizado pela equipe da Radiologia do HCPA.
+________________________________________
+28.
+Esta comunicação é realizada pela equipe da Radiologia do HCPA.
+________________________________________
+29.
+Este aviso está sendo enviado pela equipe da Radiologia do HCPA.
+________________________________________
+30.
+Este contato é feito pela equipe responsável pelos avisos de exames da Radiologia do HCPA.
+________________________________________
+31.
+Hospital de Clínicas de Porto Alegre
+Radiologia
+________________________________________
+32.
+Hospital de Clínicas de Porto Alegre
+Setor de Radiologia
+________________________________________
+33.
+Hospital de Clínicas de Porto Alegre
+Setor de Ecografia
+________________________________________
+34.
+HCPA
+Radiologia
+________________________________________
+35.
+HCPA
+Setor de Radiologia
+________________________________________
+36.
+HCPA
+Setor de Ecografia
+________________________________________
+37.
+Serviço de Radiologia
+Hospital de Clínicas de Porto Alegre
+________________________________________
+38.
+Radiologia
+Hospital de Clínicas de Porto Alegre
+________________________________________
+39.
+Setor de Ecografia
+Hospital de Clínicas de Porto Alegre
+________________________________________
+40.
+Equipe responsável pelos avisos e orientações de exames da Radiologia do HCPA

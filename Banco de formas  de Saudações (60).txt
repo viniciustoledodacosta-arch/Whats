@@ -1,0 +1,63 @@
+Manhã (28)
+01. Bom dia!
+02. Bom dia.
+03. Muito bom dia!
+04. Um bom dia para você!
+05. Tenha um excelente dia!
+06. Desejamos um ótimo dia.
+07. Esperamos que esteja bem nesta manhã.
+08. Esperamos que seu dia esteja começando bem.
+09. Que sua manhã seja tranquila.
+10. Que você tenha um excelente dia.
+11. Desejamos uma manhã tranquila.
+12. Receba nosso bom dia.
+13. Olá! Bom dia.
+14. Olá! Esperamos que esteja bem.
+15. Bom dia! Tudo bem?
+16. Bom dia! Como vai?
+17. Bom dia! Esperamos encontrá-lo(a) bem.
+18. Bom dia! Esperamos que esteja tudo bem.
+19. Que seu dia comece da melhor forma.
+20. Um ótimo início de dia para você.
+21. Desejamos um excelente começo de dia.
+22. Esperamos que sua manhã esteja sendo tranquila.
+23. Esperamos que esteja tendo uma boa manhã.
+24. Muito bom dia para você.
+25. Um excelente dia!
+26. Desejamos um excelente dia.
+27. Esperamos encontrá-lo(a) bem nesta manhã.
+28. Que seu dia seja muito bom.
+Tarde (24)
+29. Boa tarde!
+30. Boa tarde.
+31. Muito boa tarde!
+32. Uma ótima tarde para você.
+33. Desejamos uma excelente tarde.
+34. Esperamos que esteja bem nesta tarde.
+35. Esperamos que sua tarde esteja tranquila.
+36. Que sua tarde seja muito boa.
+37. Receba nossa boa tarde.
+38. Olá! Boa tarde.
+39. Boa tarde! Tudo bem?
+40. Boa tarde! Como vai?
+41. Boa tarde! Esperamos encontrá-lo(a) bem.
+42. Boa tarde! Esperamos que esteja tudo bem.
+43. Desejamos uma tarde tranquila.
+44. Esperamos que seu dia esteja transcorrendo bem.
+45. Que sua tarde seja excelente.
+46. Uma excelente continuidade de dia para você.
+47. Esperamos que esteja tendo uma boa tarde.
+48. Desejamos uma ótima sequência de dia.
+49. Muito boa tarde para você.
+50. Que sua tarde siga tranquila.
+51. Esperamos encontrá-lo(a) bem nesta tarde.
+52. Uma excelente tarde!
+Noite (8)
+53. Boa noite!
+54. Boa noite.
+55. Muito boa noite!
+56. Esperamos que esteja bem nesta noite.
+57. Receba nossa boa noite.
+58. Boa noite! Tudo bem?
+59. Boa noite! Esperamos encontrá-lo(a) bem.
+60. Desejamos uma boa noite.

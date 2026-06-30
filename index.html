@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Mensagens - Radiologia HCPA v4.0</title>
+    <style>
+        /* ===== RESET E VARIÁVEIS GLOBAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0b76ef;
+            --primary-dark: #0a5fb8;
+            --primary-light: #e3f2fd;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #eeeeee;
+            --neutral-300: #e0e0e0;
+            --neutral-400: #bdbdbd;
+            --neutral-500: #9e9e9e;
+            --neutral-600: #757575;
+            --neutral-700: #616161;
+            --neutral-800: #424242;
+            --neutral-900: #212121;
+            --text-primary: #212121;
+            --text-secondary: #666666;
+            --border-radius: 6px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--neutral-50);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            margin-top: var(--spacing-lg);
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--border-radius);
+            background-color: white;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        button:hover:not(:disabled) {
+            border-color: var(--neutral-400);
+            background-color: var(--neutral-100);
+        }
+
+        button:active:not(:disabled) {
+            background-color: var(--neutral-200);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        button.btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        button.btn-success {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        button.btn-success:hover:not(:disabled) {
+            background-color: #45a049;
+            border-color: #45a049;
+        }
+
+        button.btn-small {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        .header {
+            background-color: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: var(--spacing-lg);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .card-section {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .grid-container {
+            background-color: white;
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .grid-wrapper {
+            overflow: auto;
+            max-height: 500px;
+        }
+
+        .grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .grid thead {
+            position: sticky;
+            top: 0;
+            background-color: var(--neutral-100);
+            border-bottom: 2px solid var(--neutral-300);
+        }
+
+        .grid thead th {
+            padding: var(--spacing-sm);
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-right: 1px solid var(--neutral-200);
+            width: 60px;
+        }
+
+        .grid tbody tr:nth-child(odd) {
+            background-color: var(--neutral-50);
+        }
+
+        .grid tbody tr:hover {
+            background-color: var(--primary-light);
+        }
+
+        .grid td {
+            border-right: 1px solid var(--neutral-200);
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 0;
+        }
+
+        .grid-cell {
+            padding: var(--spacing-xs);
+            min-height: 28px;
+            outline: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .grid-cell:focus {
+            background-color: #fffceb;
+            box-shadow: inset 0 0 0 2px var(--primary);
+        }
+
+        .text-muted {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .text-small {
+            font-size: 12px;
+        }
+
+        .flex {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--neutral-100);
+            border-radius: var(--border-radius);
+            font-size: 13px;
+            margin-top: var(--spacing-md);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .message-container {
+            margin-top: var(--spacing-lg);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            background-color: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--spacing-md);
+        }
+
+        .message-text {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: var(--spacing-sm);
+            background-color: white;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .message-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mt-lg { margin-top: var(--spacing-lg); }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-md);
+            }
+
+            button {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: 13px;
+            }
+
+            .card {
+                padding: var(--spacing-md);
+            }
+
+            .grid-wrapper {
+                max-height: 300px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Gerador de Mensagens - Radiologia HCPA</h1>
+            <p class="text-muted">v4.0 | Sistema offline de geração de mensagens WhatsApp para pacientes</p>
+        </div>
+
+        <div class="main-content">
+            <div class="main">
+                <!-- Seção de Planilha -->
+                <div class="card">
+                    <div class="card-title">📊 Planilha de Dados</div>
+                    <div class="card-section">
+                        <div class="flex flex-wrap mb-md">
+                            <button id="btnPasteClipboard" class="btn-primary">📋 Colar Planilha</button>
+                            <button id="btnClearGrid">🗑️ Limpar</button>
+                            <button id="btnSampleData">📝 Exemplo</button>
+                        </div>
+                        <p class="text-muted">Cole dados com Ctrl+V ou clique em "Colar Planilha"</p>
+                    </div>
+
+                    <div class="grid-container">
+                        <div class="grid-wrapper">
+                            <table class="grid" id="gridTable">
+                                <thead id="gridHead"></thead>
+                                <tbody id="gridBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="status-bar">
+                        <div class="status-item">Célula: <span id="cellInfo" class="badge">A1</span></div>
+                        <div class="status-item">Linhas com dados: <span id="rowsInfo" class="badge">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Seção de Mapeamento de Colunas -->
+                <div class="card">
+                    <div class="card-title">🗂️ Mapeamento de Colunas</div>
+                    <div class="card-section">
+                        <p class="text-muted">Escolha qual coluna contém cada informação:</p>
+                    </div>
+
+                    <div class="flex flex-wrap">
+                        <div style="flex: 1; min-width: 150px; margin-bottom: var(--spacing-md);">
+                            <label>👤 Paciente</label>
+                            <select id="colPatient"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px; margin-bottom: var(--spacing-md);">
+                            <label>📅 Data/Horário</label>
+                            <select id="colDateTime"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px; margin-bottom: var(--spacing-md);">
+                            <label>📋 Solicitação N°</label>
+                            <select id="colRequest"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px; margin-bottom: var(--spacing-md);">
+                            <label>🔬 Exame(s)</label>
+                            <select id="colExam"></select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                            <label>📞 Telefone</label>
+                            <select id="colPhone"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Preparos -->
+                <div class="card">
+                    <div class="card-title">💊 Banco de Preparos</div>
+                    <div class="card-section">
+                        <div class="flex flex-wrap mb-md">
+                            <button id="btnScanExams" class="btn-primary">🔍 Detectar Exames</button>
+                            <button id="btnClearPreps">🗑️ Limpar Preparos</button>
+                        </div>
+                        <div class="flex">
+                            <input type="checkbox" id="chkAutoPrep" checked>
+                            <label for="chkAutoPrep" style="margin-bottom: 0; margin-left: 8px;">Auto-completar do banco</label>
+                        </div>
+                    </div>
+
+                    <div id="prepList" style="margin-top: var(--spacing-md);"></div>
+
+                    <div class="card-section mt-lg">
+                        <label for="extraMessage">Mensagem Adicional (opcional)</label>
+                        <textarea id="extraMessage" rows="4" placeholder="Ex: Favor trazer documento de identidade..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção de Geração de Mensagens -->
+                <div class="card">
+                    <div class="card-title">⚡ Geração de Mensagens</div>
+                    <div class="flex flex-wrap mb-lg">
+                        <button id="btnGenerate" class="btn-primary">⚡ Gerar Mensagens</button>
+                        <button id="btnCopyAll">📋 Copiar Todas</button>
+                        <button id="btnDownloadAll">💾 Baixar .txt</button>
+                    </div>
+
+                    <div class="status-bar">
+                        <div class="status-item">Status: <span id="genStatus" class="badge">Pronto</span></div>
+                        <div class="status-item">Mensagens: <span id="msgCount" class="badge">0</span></div>
+                    </div>
+
+                    <div id="messageList" class="message-container"></div>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-title">ℹ️ Informações</div>
+                    <div class="text-muted">
+                        <p><strong>Versão:</strong> 4.0</p>
+                        <p><strong>Modo:</strong> Offline</p>
+                        <p><strong>Paciente:</strong> HCPA</p>
+                        <p style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--neutral-200);">Todo processamento ocorre localmente. Nenhum dado é enviado a servidores.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⌨️ Atalhos</div>
+                    <div class="text-muted text-small">
+                        <p><strong>Ctrl+V:</strong> Colar na célula</p>
+                        <p><strong>↑↓←→:</strong> Navegar</p>
+                        <p><strong>Delete:</strong> Limpar</p>
+                        <p><strong>Enter:</strong> Próxima linha</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 Passos</div>
+                    <div class="text-muted text-small">
+                        <p>1️⃣ Cole seus dados</p>
+                        <p>2️⃣ Mapeie as colunas</p>
+                        <p>3️⃣ Detecte os exames</p>
+                        <p>4️⃣ Gere as mensagens</p>
+                        <p>5️⃣ Copie ou exporte</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        /* ===== CONFIGURAÇÕES ===== */
+        const CONFIG = {
+            GRID_COLS: 15,
+            GRID_ROWS: 100,
+            MAX_HISTORY: 300,
+            PHONE_DDD_DEFAULT: '51',
+        };
+
+        /* ===== BANCO DE FRASES ===== */
+        const PHRASE_BANK = {
+            greetings: {
+                morning: [
+                    'Bom dia!', 'Bom dia.', 'Muito bom dia!', 'Um bom dia para você!',
+                    'Tenha um excelente dia!', 'Desejamos um ótimo dia.', 'Esperamos que esteja bem nesta manhã.',
+                    'Que sua manhã seja tranquila.', 'Olá! Bom dia.', 'Bom dia! Como vai?',
+                    'Bom dia! Esperamos encontrá-lo(a) bem.', 'Um ótimo início de dia para você.'
+                ],
+                afternoon: [
+                    'Boa tarde!', 'Boa tarde.', 'Muito boa tarde!', 'Uma ótima tarde para você.',
+                    'Desejamos uma excelente tarde.', 'Que sua tarde seja muito boa.', 'Olá! Boa tarde.',
+                    'Boa tarde! Como vai?', 'Boa tarde! Esperamos encontrá-lo(a) bem.',
+                    'Uma excelente continuidade de dia para você.'
+                ],
+                night: [
+                    'Boa noite!', 'Boa noite.', 'Muito boa noite!', 'Esperamos que esteja bem nesta noite.',
+                    'Boa noite! Tudo bem?'
+                ]
+            },
+            treatments: [
+                'Sr(a). {NOME},', 'Prezado(a) {NOME},', 'Olá, {NOME},', '{NOME},',
+                'Prezado(a) Sr(a). {NOME},', 'Paciente {NOME},'
+            ],
+            identifications: [
+                'HCPA\nServiço de Radiologia',
+                'Serviço de Radiologia do HCPA',
+                'Radiologia do HCPA',
+                'Hospital de Clínicas de Porto Alegre\nRadiologia',
+                'Equipe da Radiologia do HCPA'
+            ],
+            introductions: [
+                'Estamos entrando em contato sobre o seu exame.',
+                'Seguem abaixo as informações do seu exame.',
+                'Esta mensagem refere-se ao seu exame agendado.',
+                'Confira abaixo as informações do seu exame.',
+                'Encaminhamos as informações do seu exame.'
+            ],
+            confirmations: [
+                'Por gentileza, responda CONFIRMO para confirmar o recebimento desta mensagem.',
+                'Pedimos que responda CONFIRMO após a leitura desta mensagem.',
+                'Para confirmar que recebeu esta mensagem, responda CONFIRMO.',
+                'Solicitamos que responda CONFIRMO, por favor.'
+            ],
+            savingContact: [
+                'Para facilitar futuros contatos, recomendamos salvar este número como Radiologia HCPA.',
+                'Sugerimos salvar este número em seus contatos como Radiologia HCPA.',
+                'Recomendamos manter este número salvo em seus contatos para futuras comunicações.'
+            ]
+        };
+
+        /* ===== BANCO DE EXAMES E PREPAROS ===== */
+        const EXAM_DATABASE = {
+            'ECOGRAFIA DO APARELHO URINÁRIO': {
+                fasting: 0,
+                prep: 'Não necessita jejum.\nTomar 4 copos de água uma hora antes e não urinar até o exame (bexiga cheia).\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA MAMÁRIA': {
+                fasting: 0,
+                prep: 'Não necessita jejum.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA DO ABDOMEN TOTAL': {
+                fasting: 6,
+                prep: 'Jejum de 6 horas.\nTomar 4 copos de água uma hora antes (bexiga cheia).\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA DO ABDOME SUPERIOR': {
+                fasting: 6,
+                prep: 'Jejum de 6 horas. É permitido água, café e chá.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECODOPPLER DE FÍGADO': {
+                fasting: 6,
+                prep: 'Jejum de 6 horas. NÃO beber água durante jejum.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA CERVICAL': {
+                fasting: 0,
+                prep: 'Não necessita jejum.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA DO JOELHO': {
+                fasting: 0,
+                prep: 'Não necessita jejum.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'ECOGRAFIA DE TIREOIDE': {
+                fasting: 0,
+                prep: 'Não necessita jejum.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            },
+            'RX DENSITOMETRIA ÓSSEA': {
+                fasting: 0,
+                prep: 'Não necessita jejum. NÃO tomar cálcio 24h antes.\nComparecerer no Setor de Radiologia - 2º Andar com documentos.'
+            }
+        };
+
+        /* ===== UTILITÁRIOS ===== */
+        const Utils = {
+            removeDiacritics(str) {
+                if (!str) return '';
+                try {
+                    return str.normalize('NFD').replace(/\p{M}/gu, '');
+                } catch (e) {
+                    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                }
+            },
+
+            columnLetter(index) {
+                return String.fromCharCode(65 + index);
+            },
+
+            columnIndex(letter) {
+                return letter.charCodeAt(0) - 65;
+            },
+
+            cleanExamText(text) {
+                if (!text || !text.trim()) return '';
+                let cleaned = text.replace(/\s*\([^)]*(\)|$)/g, '').trim();
+                cleaned = cleaned.replace(/^\d+\s*/g, '').trim();
+                cleaned = cleaned.replace(/[,;]+$/g, '').trim();
+                cleaned = cleaned.replace(/\s+/g, ' ').trim();
+                return cleaned;
+            },
+
+            extractExams(text) {
+                if (!text || !text.trim()) return [];
+                const exams = [];
+                let current = '';
+                const words = text.split(/\s+/);
+                
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    const upper = word.toUpperCase();
+                    
+                    if ((upper.startsWith('ECO') || upper.startsWith('RX')) && current.trim()) {
+                        exams.push(this.cleanExamText(current));
+                        current = word;
+                    } else {
+                        current += (current ? ' ' : '') + word;
+                    }
+                }
+                
+                if (current.trim()) {
+                    exams.push(this.cleanExamText(current));
+                }
+                
+                return exams.filter(e => e);
+            },
+
+            searchExamInDatabase(examText) {
+                if (!examText || !examText.trim()) return null;
+                const normalized = this.removeDiacritics(examText.toUpperCase().trim());
+                
+                for (const [key, value] of Object.entries(EXAM_DATABASE)) {
+                    const keyNorm = this.removeDiacritics(key.toUpperCase());
+                    if (keyNorm === normalized || keyNorm.includes(normalized)) {
+                        return value;
+                    }
+                }
+                
+                return null;
+            },
+
+            extractPhones(text) {
+                if (!text) return [];
+                const parts = text.split(/[,;\/\|\n\r]+/);
+                const phones = [];
+                
+                for (let p of parts) {
+                    p = p.trim();
+                    if (!p) continue;
+                    
+                    let digits = p.replace(/\D/g, '');
+                    digits = digits.replace(/^0+/, '');
+                    
+                    if (!digits) continue;
+                    if (digits.startsWith('55')) {
+                        phones.push(digits);
+                    } else if (digits.length >= 9) {
+                        phones.push('55' + CONFIG.PHONE_DDD_DEFAULT + digits);
+                    }
+                }
+                
+                return Array.from(new Set(phones));
+            },
+
+            formatPhoneDisplay(digits) {
+                if (!digits) return '';
+                let dd = digits;
+                if (dd.startsWith('55')) dd = dd.slice(2);
+                if (dd.length > 2) {
+                    const ddd = dd.slice(0, 2);
+                    const rest = dd.slice(2);
+                    return `(${ddd}) ${rest}`;
+                }
+                return dd;
+            },
+
+            getCurrentPeriod() {
+                const hour = new Date().getHours();
+                if (hour >= 6 && hour <= 11) return 'morning';
+                if (hour >= 12 && hour <= 17) return 'afternoon';
+                return 'night';
+            },
+
+            async copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } catch (err) {
+                    return false;
+                }
+            },
+
+            async readFromClipboard() {
+                try {
+                    return await navigator.clipboard.readText();
+                } catch (err) {
+                    return null;
+                }
+            },
+
+            selectRandomElement(array) {
+                if (!array || array.length === 0) return '';
+                return array[Math.floor(Math.random() * array.length)];
+            }
+        };
+
+        /* ===== GERENCIADOR DE GRID ===== */
+        const GridManager = {
+            selectedCell: { row: 0, col: 0 },
+            data: Array(CONFIG.GRID_ROWS).fill(null).map(() => Array(CONFIG.GRID_COLS).fill('')),
+
+            init() {
+                this.buildHeader();
+                this.buildBody();
+                this.setupEventListeners();
+            },
+
+            buildHeader() {
+                const thead = document.getElementById('gridHead');
+                thead.innerHTML = '';
+                const headerRow = document.createElement('tr');
+                for (let c = 0; c < CONFIG.GRID_COLS; c++) {
+                    const th = document.createElement('th');
+                    th.textContent = Utils.columnLetter(c);
+                    headerRow.appendChild(th);
+                }
+                thead.appendChild(headerRow);
+            },
+
+            buildBody() {
+                const tbody = document.getElementById('gridBody');
+                tbody.innerHTML = '';
+                
+                for (let r = 0; r < CONFIG.GRID_ROWS; r++) {
+                    const tr = document.createElement('tr');
+                    for (let c = 0; c < CONFIG.GRID_COLS; c++) {
+                        const td = document.createElement('td');
+                        const div = document.createElement('div');
+                        
+                        div.className = 'grid-cell';
+                        div.contentEditable = 'true';
+                        div.dataset.row = r;
+                        div.dataset.col = c;
+                        div.setAttribute('spellcheck', 'false');
+                        
+                        div.addEventListener('click', () => this.selectCell(r, c));
+                        div.addEventListener('blur', () => this.saveCellContent(r, c, div.textContent));
+                        div.addEventListener('paste', (e) => this.handlePaste(e, r, c));
+                        div.addEventListener('keydown', (e) => this.handleKeydown(e, r, c));
+                        
+                        td.appendChild(div);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+            },
+
+            selectCell(row, col) {
+                this.selectedCell = { row, col };
+                document.getElementById('cellInfo').textContent = Utils.columnLetter(col) + (row + 1);
+            },
+
+            saveCellContent(row, col, content) {
+                this.data[row][col] = content.trim();
+            },
+
+            getCellValue(row, col) {
+                return this.data[row][col] || '';
+            },
+
+            setCellValue(row, col, value) {
+                this.data[row][col] = String(value || '').trim();
+                const cell = document.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
+                if (cell) cell.textContent = this.data[row][col];
+            },
+
+            clearAll() {
+                for (let r = 0; r < CONFIG.GRID_ROWS; r++) {
+                    for (let c = 0; c < CONFIG.GRID_COLS; c++) {
+                        this.setCellValue(r, c, '');
+                    }
+                }
+            },
+
+            handlePaste(e, row, col) {
+                e.preventDefault();
+                const html = e.clipboardData?.getData?.('text/html') || '';
+                const text = e.clipboardData?.getData?.('text') || '';
+                
+                if (html) {
+                    const parsed = this.parseHTMLTable(html);
+                    if (parsed) {
+                        this.pasteMatrix(row, col, parsed);
+                        return;
+                    }
+                }
+                if (text) this.pasteText(row, col, text);
+            },
+
+            parseHTMLTable(htmlString) {
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlString, 'text/html');
+                    const table = doc.querySelector('table');
+                    
+                    if (table) {
+                        const out = [];
+                        table.querySelectorAll('tr').forEach(tr => {
+                            const row = [];
+                            tr.querySelectorAll('th,td').forEach(cell => {
+                                let txt = cell.innerText || cell.textContent || '';
+                                row.push(txt);
+                            });
+                            out.push(row);
+                        });
+                        return out;
+                    }
+                } catch (e) { }
+                return null;
+            },
+
+            pasteMatrix(startRow, startCol, matrix) {
+                for (let i = 0; i < matrix.length; i++) {
+                    const row = matrix[i];
+                    for (let j = 0; j < row.length; j++) {
+                        const r = startRow + i, c = startCol + j;
+                        if (r >= CONFIG.GRID_ROWS || c >= CONFIG.GRID_COLS) continue;
+                        this.setCellValue(r, c, String(row[j] || '').trim());
+                    }
+                }
+                this.updateStatus();
+            },
+
+            pasteText(startRow, startCol, text) {
+                const lines = text.replace(/\r/g, '').split('\n');
+                let delim = '\t';
+                const sample = lines.slice(0, 4).join('\n');
+                
+                if (!sample.includes('\t') && sample.includes(';')) delim = ';';
+                else if (!sample.includes('\t') && sample.includes(',')) delim = ',';
+                
+                const matrix = lines.map(line => line.split(delim));
+                this.pasteMatrix(startRow, startCol, matrix);
+            },
+
+            handleKeydown(e, row, col) {
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    this.selectCell(Math.max(0, row - 1), col);
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    this.selectCell(Math.min(CONFIG.GRID_ROWS - 1, row + 1), col);
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.selectCell(row, Math.max(0, col - 1));
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    this.selectCell(row, Math.min(CONFIG.GRID_COLS - 1, col + 1));
+                }
+            },
+
+            setupEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Delete') {
+                        const active = document.activeElement;
+                        if (active?.classList?.contains('grid-cell')) {
+                            e.preventDefault();
+                            const r = parseInt(active.dataset.row);
+                            const c = parseInt(active.dataset.col);
+                            this.setCellValue(r, c, '');
+                        }
+                    }
+                });
+            },
+
+            updateStatus() {
+                const rowsWithData = this.data.filter(row => row.some(cell => cell && cell.trim())).length;
+                document.getElementById('rowsInfo').textContent = rowsWithData;
+            },
+
+            loadSampleData() {
+                this.clearAll();
+                this.setCellValue(0, 1, 'João Silva');
+                this.setCellValue(0, 13, '15/01/2026 10:00');
+                this.setCellValue(0, 4, '54321');
+                this.setCellValue(0, 5, 'ECOGRAFIA DO ABDOMEN TOTAL');
+                this.setCellValue(0, 10, '(51) 99999-9999');
+                this.updateStatus();
+            }
+        };
+
+        /* ===== GERENCIADOR DE MAPEAMENTO ===== */
+        const ColumnMapper = {
+            mappings: { patient: 'B', dateTime: 'N', request: 'E', exam: 'F', phone: 'K' },
+
+            init() {
+                this.populateSelects();
+                this.setupEventListeners();
+            },
+
+            populateSelects() {
+                const selects = {
+                    '#colPatient': 'patient',
+                    '#colDateTime': 'dateTime',
+                    '#colRequest': 'request',
+                    '#colExam': 'exam',
+                    '#colPhone': 'phone'
+                };
+                
+                for (const [selector, key] of Object.entries(selects)) {
+                    const select = document.querySelector(selector);
+                    select.innerHTML = '';
+                    for (let c = 0; c < CONFIG.GRID_COLS; c++) {
+                        const opt = document.createElement('option');
+                        opt.value = Utils.columnLetter(c);
+                        opt.textContent = Utils.columnLetter(c);
+                        select.appendChild(opt);
+                    }
+                    select.value = this.mappings[key];
+                }
+            },
+
+            setupEventListeners() {
+                document.getElementById('colPatient').addEventListener('change', (e) => this.mappings.patient = e.target.value);
+                document.getElementById('colDateTime').addEventListener('change', (e) => this.mappings.dateTime = e.target.value);
+                document.getElementById('colRequest').addEventListener('change', (e) => this.mappings.request = e.target.value);
+                document.getElementById('colExam').addEventListener('change', (e) => this.mappings.exam = e.target.value);
+                document.getElementById('colPhone').addEventListener('change', (e) => this.mappings.phone = e.target.value);
+            },
+
+            getColumnIndex(key) {
+                return Utils.columnIndex(this.mappings[key]);
+            }
+        };
+
+        /* ===== GERENCIADOR DE PREPAROS ===== */
+        const PrepManager = {
+            prepMap: new Map(),
+
+            init() {
+                document.getElementById('btnScanExams').addEventListener('click', () => this.scanExams());
+                document.getElementById('btnClearPreps').addEventListener('click', () => this.clearPreps());
+                document.getElementById('chkAutoPrep').addEventListener('change', () => this.onAutoPrep());
+            },
+
+            scanExams() {
+                this.prepMap.clear();
+                const colIndex = ColumnMapper.getColumnIndex('exam');
+                const prepList = document.getElementById('prepList');
+                prepList.innerHTML = '';
+                
+                const examSet = new Map();
+                
+                for (let r = 0; r < CONFIG.GRID_ROWS; r++) {
+                    const cellValue = GridManager.getCellValue(r, colIndex);
+                    if (!cellValue) continue;
+                    
+                    const examsInCell = Utils.extractExams(cellValue);
+                    examsInCell.forEach(exam => {
+                        if (!examSet.has(exam)) examSet.set(exam, 0);
+                        examSet.set(exam, examSet.get(exam) + 1);
+                    });
+                }
+                
+                const sortedExams = Array.from(examSet.keys()).sort();
+                
+                if (sortedExams.length === 0) {
+                    prepList.textContent = '(nenhum exame encontrado)';
+                    return;
+                }
+                
+                sortedExams.forEach(exam => this.createPrepEntry(exam, examSet.get(exam), prepList));
+                this.createDefaultEntry(prepList);
+            },
+
+            createPrepEntry(exam, count, container) {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.style.marginBottom = 'var(--spacing-md)';
+                item.style.padding = 'var(--spacing-md)';
+                
+                const header = document.createElement('div');
+                header.style.marginBottom = 'var(--spacing-sm)';
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                
+                const title = document.createElement('strong');
+                title.textContent = exam;
+                
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = `${count} vez(es)`;
+                
+                header.appendChild(title);
+                header.appendChild(badge);
+                
+                const textarea = document.createElement('textarea');
+                textarea.dataset.key = exam;
+                textarea.placeholder = 'Preparo...';
+                textarea.rows = 3;
+                textarea.style.marginTop = 'var(--spacing-sm)';
+                
+                if (document.getElementById('chkAutoPrep').checked) {
+                    const found = Utils.searchExamInDatabase(exam);
+                    if (found) {
+                        textarea.value = found.prep;
+                        textarea.style.borderColor = 'var(--success)';
+                    }
+                }
+                
+                textarea.addEventListener('change', () => this.prepMap.set(exam, textarea.value));
+                
+                item.appendChild(header);
+                item.appendChild(textarea);
+                container.appendChild(item);
+            },
+
+            createDefaultEntry(container) {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.style.padding = 'var(--spacing-md)';
+                item.style.backgroundColor = 'var(--neutral-100)';
+                
+                const title = document.createElement('strong');
+                title.textContent = 'Default';
+                
+                const textarea = document.createElement('textarea');
+                textarea.dataset.key = '__DEFAULT__';
+                textarea.placeholder = 'Preparo padrão...';
+                textarea.rows = 2;
+                textarea.style.marginTop = 'var(--spacing-sm)';
+                
+                textarea.addEventListener('change', () => this.prepMap.set('__DEFAULT__', textarea.value));
+                
+                item.appendChild(title);
+                item.appendChild(textarea);
+                container.appendChild(item);
+            },
+
+            clearPreps() {
+                document.getElementById('prepList').innerHTML = '';
+                this.prepMap.clear();
+            },
+
+            onAutoPrep() {
+                if (document.getElementById('prepList').innerHTML) {
+                    this.scanExams();
+                }
+            },
+
+            selectBestPrep(examArray) {
+                if (!examArray || examArray.length === 0) return '';
+                
+                const prepList = [];
+                examArray.forEach(exam => {
+                    const found = Utils.searchExamInDatabase(exam);
+                    if (found) prepList.push(found);
+                });
+                
+                if (prepList.length === 0) return '';
+                if (prepList.length === 1) return prepList[0].prep;
+                
+                prepList.sort((a, b) => b.fasting - a.fasting);
+                return prepList[0].prep;
+            }
+        };
+
+        /* ===== GERADOR DE MENSAGENS ===== */
+        const MessageGenerator = {
+            init() {
+                document.getElementById('btnGenerate').addEventListener('click', () => this.generate());
+                document.getElementById('btnCopyAll').addEventListener('click', () => this.copyAll());
+                document.getElementById('btnDownloadAll').addEventListener('click', () => this.downloadAll());
+            },
+
+            generate() {
+                const messages = this.buildMessages();
+                this.renderMessages(messages);
+                this.updateStatus('✓ Mensagens geradas', true);
+            },
+
+            buildMessages() {
+                const messages = [];
+                
+                for (let r = 0; r < CONFIG.GRID_ROWS; r++) {
+                    const patient = GridManager.getCellValue(r, ColumnMapper.getColumnIndex('patient'));
+                    const dateTime = GridManager.getCellValue(r, ColumnMapper.getColumnIndex('dateTime'));
+                    const request = GridManager.getCellValue(r, ColumnMapper.getColumnIndex('request'));
+                    const examRaw = GridManager.getCellValue(r, ColumnMapper.getColumnIndex('exam'));
+                    const phoneRaw = GridManager.getCellValue(r, ColumnMapper.getColumnIndex('phone'));
+                    
+                    if (!patient && !dateTime && !request && !examRaw && !phoneRaw) continue;
+                    
+                    const exams = Utils.extractExams(examRaw);
+                    const phones = Utils.extractPhones(phoneRaw);
+                    
+                    let examsList = '';
+                    let prepText = '';
+                    
+                    if (exams.length > 0) {
+                        examsList = exams.join('\n');
+                        prepText = PrepManager.selectBestPrep(exams);
+                        if (!prepText && PrepManager.prepMap.has('__DEFAULT__')) {
+                            prepText = PrepManager.prepMap.get('__DEFAULT__');
+                        }
+                    }
+                    
+                    const message = this.buildMessage(patient, dateTime, request, examsList, prepText);
+                    messages.push({ text: message, phones, patient });
+                }
+                
+                return messages;
+            },
+
+            buildMessage(patient, dateTime, request, exams, prep) {
+                const period = Utils.getCurrentPeriod();
+                const greeting = Utils.selectRandomElement(PHRASE_BANK.greetings[period]);
+                let treatment = Utils.selectRandomElement(PHRASE_BANK.treatments);
+                treatment = treatment.replace(/{NOME}/g, patient).replace(/{PRIMEIRO_NOME}/g, patient.split(' ')[0]);
+                
+                const identification = Utils.selectRandomElement(PHRASE_BANK.identifications);
+                const introduction = Utils.selectRandomElement(PHRASE_BANK.introductions);
+                const confirmation = Utils.selectRandomElement(PHRASE_BANK.confirmations);
+                const savingContact = Utils.selectRandomElement(PHRASE_BANK.savingContact);
+                
+                let msg = `${greeting}\n\n${treatment}\n\n${identification}\n\n${introduction}\n\n`;
+                msg += `Paciente: ${patient}\n`;
+                msg += `Data/Horário: ${dateTime}\n`;
+                msg += `Solicitação: ${request}\n\n`;
+                msg += `Exame(s):\n${exams}\n`;
+                if (prep) msg += `\nPreparo:\n${prep}\n`;
+                msg += `\n${confirmation}\n\n${savingContact}`;
+                
+                return msg;
+            },
+
+            renderMessages(messages) {
+                const container = document.getElementById('messageList');
+                container.innerHTML = '';
+                document.getElementById('msgCount').textContent = messages.length;
+                
+                messages.forEach((msg, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'message-item';
+                    
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'message-text';
+                    textDiv.textContent = msg.text;
+                    
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'message-actions';
+                    
+                    const btnCopy = document.createElement('button');
+                    btnCopy.className = 'btn-small';
+                    btnCopy.textContent = '📋 Copiar';
+                    btnCopy.addEventListener('click', async () => {
+                        const success = await Utils.copyToClipboard(msg.text);
+                        btnCopy.textContent = success ? '✓' : '✗';
+                        setTimeout(() => btnCopy.textContent = '📋 Copiar', 1500);
+                    });
+                    
+                    actionsDiv.appendChild(btnCopy);
+                    
+                    if (msg.phones && msg.phones.length > 0) {
+                        msg.phones.forEach(phone => {
+                            const btnWhats = document.createElement('button');
+                            btnWhats.className = 'btn-small';
+                            btnWhats.textContent = `💬 ${Utils.formatPhoneDisplay(phone)}`;
+                            btnWhats.addEventListener('click', () => {
+                                const url = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg.text)}`;
+                                window.open(url, '_blank');
+                            });
+                            actionsDiv.appendChild(btnWhats);
+                        });
+                    }
+                    
+                    item.appendChild(textDiv);
+                    item.appendChild(actionsDiv);
+                    container.appendChild(item);
+                });
+            },
+
+            async copyAll() {
+                const messages = this.buildMessages();
+                if (messages.length === 0) { alert('Nenhuma mensagem'); return; }
+                
+                const text = messages.map(m => m.text).join('\n\n---\n\n');
+                const success = await Utils.copyToClipboard(text);
+                this.updateStatus(success ? '✓ Copiado' : '✗ Erro', success);
+            },
+
+            downloadAll() {
+                const messages = this.buildMessages();
+                if (messages.length === 0) { alert('Nenhuma mensagem'); return; }
+                
+                const text = messages.map(m => m.text).join('\n\n---\n\n');
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mensagens_${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+                
+                this.updateStatus('✓ Download', true);
+            },
+
+            updateStatus(msg, success = false) {
+                const badge = document.getElementById('genStatus');
+                badge.textContent = msg;
+                badge.className = success ? 'badge badge-success' : 'badge';
+                setTimeout(() => { badge.textContent = 'Pronto'; badge.className = 'badge'; }, 2500);
+            }
+        };
+
+        /* ===== INICIALIZAÇÃO ===== */
+        document.addEventListener('DOMContentLoaded', () => {
+            GridManager.init();
+            ColumnMapper.init();
+            PrepManager.init();
+            MessageGenerator.init();
+            
+            document.getElementById('btnClearGrid').addEventListener('click', () => {
+                if (confirm('Limpar toda a planilha?')) GridManager.clearAll();
+            });
+            
+            document.getElementById('btnSampleData').addEventListener('click', () => {
+                GridManager.loadSampleData();
+            });
+            
+            document.getElementById('btnPasteClipboard').addEventListener('click', async () => {
+                const text = await Utils.readFromClipboard();
+                if (text) {
+                    GridManager.pasteText(GridManager.selectedCell.row, GridManager.selectedCell.col, text);
+                } else {
+                    alert('Não foi possível ler. Cole com Ctrl+V na célula.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

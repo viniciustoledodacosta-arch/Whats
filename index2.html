@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gerador de Mensagens - Radiologia HCPA v4.0 COMPLETO</title>
+    <style>
+        :root{--accent:#0b76ef}
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:12px;color:#202124;background:#f6f8fa}
+        h1{font-size:1.05rem;margin:0 0 10px}
+        .wrap{max-width:1100px;margin:0 auto}
+        .box{background:#fff;border:1px solid #e3e7ea;padding:12px;border-radius:8px;margin-bottom:12px}
+        label{display:block;font-weight:600;margin-bottom:6px}
+        .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+        button{padding:8px 10px;border-radius:6px;border:1px solid #c7ced4;background:#fff;cursor:pointer}
+        button.primary{background:var(--accent);color:#fff;border-color:rgba(0,0,0,0.06)}
+        .hint{color:#666;font-size:13px}
+        .grid-wrap{overflow:auto;border:1px solid #d6dbe0;border-radius:6px;background:#fff}
+        table.grid{border-collapse:collapse;min-width:980px;width:100%}
+        table.grid thead th{position:sticky;top:0;background:#f1f5f8;border-bottom:1px solid #d6dbe0;padding:6px 8px;text-align:center;font-weight:700}
+        table.grid th.colhead{width:70px}
+        table.grid td{border-bottom:1px solid #eef2f5;padding:0;margin:0;vertical-align:top}
+        .cell{min-height:26px;padding:6px 8px;outline:none;white-space:pre-wrap;font-family:monospace;font-size:13px}
+        .cell:focus{background:#fffceb;box-shadow:inset 0 0 0 1px rgba(11,118,239,0.2)}
+        .selected-header{background:linear-gradient(90deg,rgba(11,118,239,0.08),transparent)}
+        .controls{display:flex;gap:8px;align-items:center}
+        .prep-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+        .prep-item{display:flex;gap:8px;align-items:flex-start}
+        .prep-item textarea{min-height:60px;flex:1;padding:6px;border-radius:6px;border:1px solid #d6dbe0}
+        .messages{margin-top:10px}
+        .message{background:#fff;padding:8px;border:1px solid #e6eefb;border-radius:6px;margin-bottom:8px;display:flex;gap:8px;align-items:flex-start}
+        .msg-text{flex:1;white-space:pre-wrap;font-family:inherit;font-size:12px}
+        .controls-vert{display:flex;flex-direction:column;gap:6px}
+        .phone-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+        .phone-btn{padding:6px 8px;border-radius:6px;border:1px solid #c7ced4;background:#f8fafc;cursor:pointer;font-size:13px}
+        input[type=text]{padding:6px;border-radius:6px;border:1px solid #cfd8dd}
+        select{padding:6px;border-radius:6px;border:1px solid #cfd8dd}
+        .right{margin-left:auto}
+        .small{font-size:12px;color:#666}
+        .chk-auto-prep{display:flex;align-items:center;gap:8px;margin-top:8px}
+        .chk-auto-prep input{cursor:pointer}
+        .chk-auto-prep label{margin:0;font-weight:600}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>Montador de Mensagens — Radiologia HCPA v4.0 COMPLETO</h1>
+
+        <div class="box">
+            <label>Instruções rápidas</label>
+            <div class="hint">
+                - A planilha tem colunas de A até O e 100 linhas.<br>
+                - Cole com Ctrl+V numa célula ou use "Colar da área de transferência".<br>
+                - Se o telefone não tiver DDD, o app assume DDD 51 (ex.: 999999999 -> +55 51 999999999).<br>
+                - <strong>Ative "Auto-completar preparos"</strong> para buscar automaticamente os preparos no banco de dados.<br>
+                - <strong>Versão com 60 saudações, 50 tratamentos, 40 identificações, 50 introduções, 20 confirmações e 15 contatos.</strong>
+            </div>
+        </div>
+
+        <div class="box">
+            <label>Planilha (A .. O) — 100 linhas</label>
+            <div class="row" style="margin-bottom:8px;align-items:center">
+                <div class="controls">
+                    <button id="btnPasteClipboard">Colar da área de transferência (preencher)</button>
+                    <button id="btnClearGrid">Limpar planilha</button>
+                    <button id="btnSample">Exemplo rápido</button>
+                </div>
+                <div class="hint right">Célula selecionada: <span id="selInfo">A1</span></div>
+            </div>
+
+            <div class="grid-wrap" id="gridWrap" style="max-height:420px">
+                <table class="grid" id="gridTable" tabindex="0" aria-label="Planilha de entrada">
+                    <thead><tr id="theadRow"></tr></thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="box">
+            <label>Mapear colunas (escolha a letra correspondente)</label>
+            <div class="row">
+                <div>
+                    <label>Paciente (AAA)</label>
+                    <select id="selAAA"></select>
+                </div>
+                <div>
+                    <label>Data / horário (BBB)</label>
+                    <select id="selBBB"></select>
+                </div>
+                <div>
+                    <label>Solicitação(s) n° (CCC)</label>
+                    <select id="selCCC"></select>
+                </div>
+                <div>
+                    <label>Exame(s) (DDD) — usado também para preparar</label>
+                    <select id="selDDD"></select>
+                </div>
+                <div>
+                    <label>Telefone (KK)</label>
+                    <select id="selKK"></select>
+                </div>
+            </div>
+            <div class="hint" style="margin-top:8px">Selecione a letra da coluna que contém cada dado (A..O). As células vazias são ignoradas ao gerar mensagens.</div>
+        </div>
+
+        <div class="box">
+            <label>Preparos por tipo de exame (será detectado a partir da coluna DDD)</label>
+            <div class="row" style="margin-bottom:8px">
+                <button id="btnScanPreps">Detectar tipos de exame e criar entradas</button>
+                <button id="btnClearPreps">Limpar preparos</button>
+            </div>
+            <div class="chk-auto-prep">
+                <input type="checkbox" id="chkAutoPrep" checked />
+                <label for="chkAutoPrep">Auto-completar preparos (buscar no banco de dados)</label>
+            </div>
+            <div class="prep-list" id="prepList"></div>
+
+            <div style="margin-top:8px">
+                <label>Mensagem adicional a anexar (opcional)</label>
+                <textarea id="extraMsg" placeholder="Ex: Favor trazer documento de identidade e cartão SUS."></textarea>
+            </div>
+        </div>
+
+        <div class="box">
+            <label>Gerar mensagens</label>
+            <div class="row" style="align-items:center;margin-bottom:8px">
+                <button id="btnGenerate" class="primary">Gerar mensagens</button>
+                <button id="btnCopyAll">Copiar todas</button>
+                <button id="btnDownloadAll">Baixar .txt</button>
+                <button id="btnOpenAll">Abrir todas (1º telefone)</button>
+                <div class="right hint" id="countMsg">0 mensagens</div>
+            </div>
+            <div id="messages" class="messages"></div>
+        </div>
+
+        <div class="box">
+            <div class="hint">Observação: o app roda no navegador, não envia dados a servidores. Salve o arquivo e abra no navegador quando precisar.</div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const COLS = 15, ROWS = 100;
+
+            /* ===== BANCO DE FRASES COMPLETO ===== */
+            const phrasesBank = {
+                greetings: {
+                    morning: [
+                        'Bom dia!', 'Bom dia.', 'Muito bom dia!', 'Um bom dia para você!',
+                        'Tenha um excelente dia!', 'Desejamos um ótimo dia.', 'Esperamos que esteja bem nesta manhã.',
+                        'Esperamos que seu dia esteja começando bem.', 'Que sua manhã seja tranquila.',
+                        'Que você tenha um excelente dia.', 'Desejamos uma manhã tranquila.', 'Receba nosso bom dia.',
+                        'Olá! Bom dia.', 'Olá! Esperamos que esteja bem.', 'Bom dia! Tudo bem?', 'Bom dia! Como vai?',
+                        'Bom dia! Esperamos encontrá-lo(a) bem.', 'Bom dia! Esperamos que esteja tudo bem.',
+                        'Que seu dia comece da melhor forma.', 'Um ótimo início de dia para você.',
+                        'Desejamos um excelente começo de dia.', 'Esperamos que sua manhã esteja sendo tranquila.',
+                        'Esperamos que esteja tendo uma boa manhã.', 'Muito bom dia para você.', 'Um excelente dia!',
+                        'Desejamos um excelente dia.', 'Esperamos encontrá-lo(a) bem nesta manhã.', 'Que seu dia seja muito bom.',
+                        'Bom dia! Tudo certo?', 'Bom dia! Espero que esteja bem.', 'Bom dia! Esperamos seu contato.',
+                        'Uma manhã abençoada para você!', 'Que tenha um dia repleto de bênçãos.', 'Esperamos você com alegria.',
+                        'Que o dia seja luz em sua vida.', 'Uma belíssima manhã para você.', 'Que a manhã seja mágica.',
+                        'Esperamos uma ótima manhã para você.', 'Bom dia a você e à sua família.', 'Que tudo corra bem hoje!',
+                        'Tenha um dia maravilhoso!', 'Um dia cheio de alegrias para você.', 'Tudo bem nesta manhã?',
+                        'Bom dia! Que dia especial hoje.', 'Uma manhã muito feliz para você.', 'Que tudo seja perfeito hoje!',
+                        'Bom dia! Sucesso no seu dia.', 'Um dia abençoado para você.', 'Bom dia com o coração!',
+                        'Que a manhã seja radiante.', 'Bom dia, paciente querido!', 'Que você tenha uma excelente manhã.'
+                    ],
+                    afternoon: [
+                        'Boa tarde!', 'Boa tarde.', 'Muito boa tarde!', 'Uma ótima tarde para você.',
+                        'Desejamos uma excelente tarde.', 'Esperamos que esteja bem nesta tarde.', 'Esperamos que sua tarde esteja tranquila.',
+                        'Que sua tarde seja muito boa.', 'Receba nossa boa tarde.', 'Olá! Boa tarde.',
+                        'Boa tarde! Tudo bem?', 'Boa tarde! Como vai?', 'Boa tarde! Esperamos encontrá-lo(a) bem.',
+                        'Boa tarde! Esperamos que esteja tudo bem.', 'Desejamos uma tarde tranquila.',
+                        'Esperamos que seu dia esteja transcorrendo bem.', 'Que sua tarde seja excelente.',
+                        'Uma excelente continuidade de dia para você.', 'Esperamos que esteja tendo uma boa tarde.',
+                        'Desejamos uma ótima sequência de dia.', 'Muito boa tarde para você.', 'Que sua tarde siga tranquila.',
+                        'Esperamos encontrá-lo(a) bem nesta tarde.', 'Uma excelente tarde!', 'Boa tarde! Tudo certo?',
+                        'Boa tarde! Espero que esteja bem.', 'Uma belíssima tarde para você.', 'Que a tarde seja luz.',
+                        'Uma maravilhosa continuidade de dia.', 'Boa tarde a você e sua família!', 'Que tudo corra bem esta tarde!',
+                        'Tenha uma tarde maravilhosa!', 'Uma tarde cheio de alegrias para você.', 'Tudo bem nesta tarde?',
+                        'Boa tarde! Que dia especial hoje.', 'Uma tarde muito feliz para você.', 'Que tudo seja perfeito agora!',
+                        'Boa tarde! Sucesso na sua tarde.', 'Uma tarde abençoada para você.', 'Boa tarde com o coração!',
+                        'Que a tarde seja radiante.', 'Boa tarde, paciente querido!', 'Que você tenha uma excelente tarde.',
+                        'Uma ótima continuação de dia.', 'Esperamos que tenha uma excelente tarde.', 'Que a tarde seja perfeita!',
+                        'Boa tarde com otimismo.', 'Que sua tarde seja repleta de sucesso.', 'Uma tarde com alegria para você!'
+                    ],
+                    night: [
+                        'Boa noite!', 'Boa noite.', 'Muito boa noite!', 'Uma ótima noite para você.',
+                        'Desejamos uma excelente noite.', 'Esperamos que esteja bem nesta noite.',
+                        'Que sua noite seja tranquila.', 'Olá! Boa noite.', 'Boa noite! Como vai?',
+                        'Boa noite! Esperamos encontrá-lo(a) bem.'
+                    ]
+                },
+                treatments: [
+                    'Sr(a). {NOME},', 'Prezado(a) Sr(a). {NOME},', 'Prezado(a) paciente {NOME},',
+                    'Caro(a) Sr(a). {NOME},', 'Sr(a). {PRIMEIRO_NOME},', 'Prezado(a) {NOME},',
+                    'Estimado(a) {NOME},', 'Excelentíssimo(a) Sr(a). {NOME},', 'Nobilíssimo(a) {NOME},',
+                    'Honrado(a) {NOME},', 'Ilustríssimo(a) Sr(a). {NOME},', 'Digníssimo(a) {NOME},',
+                    'Paciente {NOME},', '{NOME}, bom recebê-lo(a) por aqui.', '{NOME}, esperamos encontrá-lo(a) bem.',
+                    '{NOME}, tudo bem?', '{NOME}, como vai?', '{NOME}, esperamos que esteja bem.',
+                    '{NOME}, desejamos que esteja tudo bem.', '{NOME}, recebemos seu cadastro para contato.',
+                    '{NOME}, estamos entrando em contato.', '{NOME}, que prazer em contato com você.', '{NOME}, é um privilégio conversar com você.',
+                    'Olá, {NOME},', 'Olá, Sr(a). {NOME},', 'Bom falar com você, {NOME}.', 'É um prazer falar com você, {NOME}.',
+                    'Gostaríamos de falar com você, {NOME}.', 'Estamos entrando em contato com você, {NOME}.', 'Esperamos que esteja bem, {NOME}.',
+                    'Tudo bem com você, {NOME}?', 'Como vai você, {NOME}?', '{NOME},', '{PRIMEIRO_NOME},', 'Prezado(a) {PRIMEIRO_NOME},',
+                    'Caro(a) {PRIMEIRO_NOME},', '{NOME}, seja bem-vindo(a) ao nosso contato.', '{NOME}, esta mensagem é destinada a você.',
+                    '{NOME}, gostaríamos de compartilhar algumas informações.', '{NOME}, seguem algumas informações importantes.',
+                    '{NOME}, temos um comunicado para você.', '{NOME}, enviamos esta mensagem especialmente para você.',
+                    'Prezado {NOME},', 'Caro {NOME},', 'Querido(a) {NOME},', 'Amigo(a) {NOME},',
+                    'Paciente estimado(a) {NOME},', 'Prezadíssimo(a) {NOME},'
+                ],
+                identifications: [
+                    'Hospital de Clínicas de Porto Alegre (HCPA)\nServiço de Radiologia',
+                    'HCPA\nServiço de Radiologia',
+                    'Serviço de Radiologia do HCPA',
+                    'Radiologia do Hospital de Clínicas de Porto Alegre',
+                    'Radiologia do HCPA',
+                    'Setor de Radiologia do HCPA',
+                    'Equipe do Serviço de Radiologia do HCPA',
+                    'Equipe da Radiologia do HCPA',
+                    'Equipe responsável pelos avisos de exames da Radiologia do HCPA',
+                    'Equipe responsável pelas orientações de exames da Radiologia do HCPA',
+                    'Equipe responsável pela comunicação com pacientes da Radiologia do HCPA',
+                    'Equipe responsável pelos avisos aos pacientes da Radiologia do HCPA',
+                    'Equipe responsável pelas orientações aos pacientes da Radiologia do HCPA',
+                    'Somos da equipe responsável pelos avisos de exames da Radiologia do HCPA.',
+                    'Somos da equipe responsável pelas orientações de exames da Radiologia do HCPA.',
+                    'Somos da equipe da Radiologia do HCPA.',
+                    'Somos da equipe do Serviço de Radiologia do HCPA.',
+                    'Entramos em contato pela equipe da Radiologia do HCPA.',
+                    'Esta mensagem é enviada pela equipe da Radiologia do HCPA.',
+                    'Este contato é realizado pela equipe da Radiologia do HCPA.',
+                    'Esta comunicação é realizada pela equipe da Radiologia do HCPA.',
+                    'Este aviso está sendo enviado pela equipe da Radiologia do HCPA.',
+                    'Hospital de Clínicas de Porto Alegre\nRadiologia',
+                    'HCPA\nRadiologia',
+                    'Serviço de Radiologia\nHospital de Clínicas de Porto Alegre',
+                    'Unidade de Radiologia do HCPA',
+                    'Departamento de Radiologia - HCPA',
+                    'Centro de Radiologia do HCPA',
+                    'Núcleo de Radiologia - HCPA',
+                    'Divisão de Radiologia - Hospital de Clínicas',
+                    'Serviço de Diagnóstico por Imagem do HCPA',
+                    'Radiologia e Diagnóstico por Imagem - HCPA',
+                    'Equipe Multiprofissional de Radiologia do HCPA',
+                    'Área de Radiologia do HCPA',
+                    'Setor de Diagnóstico por Imagem - HCPA',
+                    'Hospital de Clínicas\nDivisão de Radiologia',
+                    'HCPA - Setor de Imagem',
+                    'Radiologia - Hospital de Clínicas de Porto Alegre',
+                    'Serviço de Radiologia - HCPA',
+                    'Equipe de Radiologia da Instituição',
+                    'Contato: Radiologia do HCPA'
+                ],
+                introductions: [
+                    'Estamos entrando em contato sobre o seu exame.',
+                    'Entramos em contato para falar sobre o seu exame.',
+                    'Seguem abaixo as informações do seu exame.',
+                    'Estamos enviando os dados do seu exame.',
+                    'Esta mensagem refere-se ao seu exame agendado.',
+                    'Confira abaixo as informações do seu exame.',
+                    'Encaminhamos as informações do seu exame.',
+                    'Seguem os detalhes do seu exame.',
+                    'Estamos enviando as informações do seu agendamento.',
+                    'Abaixo estão os dados do seu exame.',
+                    'Gostaríamos de compartilhar as informações do seu exame.',
+                    'Estamos encaminhando os dados do seu exame.',
+                    'Esta mensagem é sobre o seu exame agendado.',
+                    'Enviamos abaixo as informações do seu exame.',
+                    'Estamos encaminhando as informações do seu exame.',
+                    'Seguem as informações do seu exame.',
+                    'A seguir estão os dados do seu exame.',
+                    'Encaminhamos abaixo os dados do seu exame.',
+                    'Estamos compartilhando as informações do seu exame.',
+                    'Seguem abaixo as orientações do seu exame.',
+                    'Confira as informações do exame abaixo.',
+                    'A seguir você encontrará as informações do seu exame.',
+                    'Encaminhamos esta mensagem sobre o seu exame.',
+                    'Seguem os dados referentes ao seu exame.',
+                    'Esta mensagem contém as informações do seu exame.',
+                    'Reunimos abaixo as informações do seu exame.',
+                    'Encaminhamos os detalhes do seu exame.',
+                    'Estamos enviando as orientações do seu exame.',
+                    'Nesta mensagem contém informações do seu exame.',
+                    'Preparamos as informações do seu exame.',
+                    'Temos o prazer de compartilhar os dados do seu exame.',
+                    'Repassamos abaixo os detalhes do seu exame.',
+                    'Apresentamos abaixo a informação do seu exame.',
+                    'Todos os dados do exame estão listados abaixo.',
+                    'Confira os dados e orientações do seu exame.',
+                    'Segue em anexo as informações do exame agendado.',
+                    'Apresentamos abaixo todas as informações necessárias.',
+                    'A informação de seu exame segue em detalhes abaixo.',
+                    'Compartilhamos agora os dados do seu exame.',
+                    'Segue abaixo tudo o que você precisa saber.',
+                    'Encaminhamos para você as informações completas.',
+                    'Veja abaixo os detalhes de seu exame.',
+                    'Temos o prazer de informar abaixo seu exame.',
+                    'Confirmamos aqui seu agendamento de exame.',
+                    'Segue confirmação de seu exame com todos os detalhes.',
+                    'Repassamos agora informações importantes do seu exame.',
+                    'Queremos garantir que tem todas as informações necessárias.',
+                    'Segue aqui um resumo do seu agendamento de exame.',
+                    'Disponibilizamos abaixo todos os dados solicitados.',
+                    'Conferimos tudo e segue as informações do exame.',
+                    'Organize seus compromissos com base nas informações abaixo.'
+                ],
+                confirmations: [
+                    'Por gentileza, responda CONFIRMO para confirmar o recebimento desta mensagem.',
+                    'Pedimos que responda CONFIRMO após a leitura desta mensagem.',
+                    'Para confirmar que recebeu esta mensagem, responda CONFIRMO.',
+                    'Solicitamos que responda CONFIRMO, por favor.',
+                    'Após ler esta mensagem, basta responder CONFIRMO.',
+                    'Pedimos a gentileza de confirmar o recebimento respondendo CONFIRMO.',
+                    'Sua confirmação é muito importante. Responda CONFIRMO, por favor.',
+                    'Para registrar sua confirmação, responda CONFIRMO.',
+                    'Caso tenha recebido esta mensagem, responda CONFIRMO.',
+                    'Assim que possível, responda CONFIRMO para confirmar o recebimento.',
+                    'Solicitamos sua confirmação respondendo apenas CONFIRMO.',
+                    'Para confirmar o recebimento das informações, responda CONFIRMO.',
+                    'Pedimos que confirme esta mensagem respondendo CONFIRMO.',
+                    'Para que possamos registrar seu retorno, responda CONFIRMO.',
+                    'Confirme o recebimento desta mensagem respondendo CONFIRMO, por gentileza.',
+                    'Pedimos que responda CONFIRMO para confirmar que recebeu as informações.',
+                    'Quando possível, responda CONFIRMO.',
+                    'Basta responder CONFIRMO para confirmar o recebimento desta mensagem.',
+                    'Solicitamos seu retorno respondendo CONFIRMO.',
+                    'Por favor, confirme o recebimento respondendo CONFIRMO.'
+                ],
+                savingContact: [
+                    'Para facilitar futuros contatos, recomendamos salvar este número como Radiologia HCPA.',
+                    'Sugerimos salvar este número em seus contatos como Radiologia HCPA.',
+                    'Para reconhecer facilmente nossas próximas mensagens, salve este número como Radiologia HCPA.',
+                    'Este número é utilizado pela equipe da Radiologia do HCPA. Recomendamos mantê-lo salvo em seus contatos.',
+                    'Para facilitar nossa comunicação, sugerimos salvar este número como Radiologia HCPA.',
+                    'Sempre que necessário, entraremos em contato por este número. Vale a pena salvá-lo como Radiologia HCPA.',
+                    'Salvar este número como Radiologia HCPA ajudará a identificar futuras mensagens da nossa equipe.',
+                    'Para que nossas próximas mensagens sejam facilmente identificadas, sugerimos salvar este número como Radiologia HCPA.',
+                    'Recomendamos manter este número salvo em seus contatos para futuras comunicações da Radiologia do HCPA.',
+                    'Este é o número utilizado para os contatos da Radiologia do HCPA. Se desejar, salve-o como Radiologia HCPA.',
+                    'Para facilitar o recebimento de futuras informações sobre seus exames, sugerimos salvar este número.',
+                    'Caso ainda não tenha feito isso, recomendamos salvar este número como Radiologia HCPA.',
+                    'Este contato poderá ser utilizado em futuras comunicações sobre seus exames. Recomendamos mantê-lo salvo.',
+                    'Para facilitar nosso contato sempre que necessário, sugerimos salvar este número em seus contatos.',
+                    'Salvar este número como Radiologia HCPA facilitará a identificação de futuras mensagens da nossa equipe.'
+                ]
+            };
+
+            /* ===== BANCO DE EXAMES E PREPAROS ===== */
+            const examDatabase = {
+                "ECOGRAFIA DO APARELHO URINÁRIO": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCrianças até 10 anos: hidratar a criança com qualquer líquido pelo menos uma hora antes do exame, conforme aceitação (exame deverá ser feito de bexiga cheia).\n\nAdultos e crianças com 11 anos ou mais: tomar 4 copos de água uma hora antes do exame e não urinar até a realização do exame (exame deverá ser feito de bexiga cheia).\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA MAMÁRIA": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DA REGIÃO AXILAR DIREITA": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DA REGIÃO AXILAR ESQUERDA": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DO ABDOMEN TOTAL": {fasting:6, prep:"*PREPARO PARA O EXAME:*\n*JEJUM DE 6 HORAS.*\n\nCrianças até 10 anos: hidratar a criança com qualquer líquido pelo menos uma hora antes do exame, conforme aceitação (exame deverá ser feito de bexiga cheia).\n\nAdultos e crianças com 11 anos ou mais: tomar 4 copos de água uma hora antes do exame e não urinar até a realização do exame (exame deverá ser feito de bexiga cheia), é permitido tomar água, café e suco.\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DO ABDOME SUPERIOR": {fasting:6, prep:"*PREPARO PARA O EXAME:*\n*JEJUM DE 6 HORAS.*\n\nCrianças até 10 anos: não necessita de preparo.\n\nAdultos e crianças com 11 anos ou mais: é permitido tomar água, café, chá e suco.\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECODOPPLER DO SISTEMA PORTA": {fasting:6, prep:"*PREPARO PARA O EXAME:*\n*JEJUM DE 6 HORAS.*\nDurante o Jejum *NÃO* é permitido beber água.\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECODOPPLER DE FÍGADO": {fasting:6, prep:"*PREPARO PARA O EXAME:*\n*JEJUM DE 6 HORAS.*\nDurante o Jejum *NÃO* é permitido beber água.\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DE TIREOIDE": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DO JOELHO": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "ECOGRAFIA DO ABDOME INFERIOR FEMININO": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nCrianças até 10 anos: hidratar a criança com qualquer líquido pelo menos uma hora antes do exame, conforme aceitação (exame deverá ser feito de bexiga cheia).\n\nAdultos e crianças com 11 anos ou mais: tomar 4 copos de água uma hora antes do exame e não urinar até a realização do exame (exame deverá ser feito de bexiga cheia).\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."},
+                "RX DENSITOMETRIA ÓSSEA": {fasting:0, prep:"*PREPARO PARA O EXAME:*\n*NÃO NECESSITA JEJUM.*\n\nNÃO TOMAR CÁLCIO 24h ANTES DO EXAME\n\nCOMPARECER NO SETOR DE RADIOLOGIA - 2º ANDAR - COM DOCUMENTOS."}
+            };
+
+            const theadRow = document.getElementById('theadRow'), tbody = document.getElementById('tbody');
+            const selInfo = document.getElementById('selInfo');
+            const btnPasteClipboard = document.getElementById('btnPasteClipboard');
+            const btnClearGrid = document.getElementById('btnClearGrid');
+            const btnSample = document.getElementById('btnSample');
+            const selAAA = document.getElementById('selAAA'), selBBB = document.getElementById('selBBB'), selCCC = document.getElementById('selCCC'), selDDD = document.getElementById('selDDD'), selKK = document.getElementById('selKK');
+            const btnScanPreps = document.getElementById('btnScanPreps'), btnClearPreps = document.getElementById('btnClearPreps'), prepList = document.getElementById('prepList');
+            const extraMsg = document.getElementById('extraMsg');
+            const btnGenerate = document.getElementById('btnGenerate'), messagesDiv = document.getElementById('messages');
+            const btnCopyAll = document.getElementById('btnCopyAll'), btnDownloadAll = document.getElementById('btnDownloadAll');
+            const countMsg = document.getElementById('countMsg');
+            const chkAutoPrep = document.getElementById('chkAutoPrep');
+
+            let selected = {r:0,c:0};
+
+            function letter(i){ return String.fromCharCode(65 + i); }
+
+            function buildHeader(){
+                theadRow.innerHTML = '';
+                for(let c=0;c<COLS;c++){
+                    const th=document.createElement('th'); th.className='colhead'; th.textContent=letter(c); theadRow.appendChild(th);
+                }
+            }
+
+            function buildBody(){
+                tbody.innerHTML='';
+                for(let r=0;r<ROWS;r++){
+                    const tr=document.createElement('tr');
+                    for(let c=0;c<COLS;c++){
+                        const td=document.createElement('td');
+                        const div=document.createElement('div');
+                        div.className='cell'; div.contentEditable='true'; div.dataset.row=r; div.dataset.col=c; div.setAttribute('spellcheck','false');
+                        div.addEventListener('click', ()=> setSelected(r,c));
+                        div.addEventListener('paste', (e)=> {
+                            e.preventDefault();
+                            const html = (e.clipboardData && e.clipboardData.getData && e.clipboardData.getData('text/html')) || '';
+                            const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+                            if (html) { const parsed = parseHTMLTable(html); if (parsed && parsed.length){ pasteMatrixAt(r,c,parsed); return; } }
+                            if (text) pasteTextAt(r,c,text);
+                        });
+                        td.appendChild(div); tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+            }
+
+            function setSelected(r,c){
+                document.querySelectorAll('.selected-header').forEach(el=>el.classList.remove('selected-header'));
+                selected.r=r; selected.c=c;
+                selInfo.textContent = letter(c) + (r+1);
+                const th = theadRow.children[c]; if (th) th.classList.add('selected-header');
+                const node = getCellDiv(r,c); if (node) node.focus();
+            }
+
+            function getCellDiv(r,c){ return tbody.querySelector('.cell[data-row="'+r+'"][data-col="'+c+'"]'); }
+            function getCellValue(r,c){ const d=getCellDiv(r,c); return d ? d.textContent.trim() : ''; }
+
+            function removeDiacritics(s){
+                try { return s.normalize('NFD').replace(/\p{M}/gu,''); }
+                catch(e){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+            }
+
+            function expandMamaria(text){
+                if (!text) return text;
+                const norm = removeDiacritics(text).toLowerCase();
+                if (norm.includes('mamaria')) {
+                    let result = text;
+                    const hasRight = norm.includes('regiao axilar direita');
+                    const hasLeft = norm.includes('regiao axilar esquerda');
+                    if (!hasRight) result += '\nECOGRAFIA DA REGIÃO AXILAR DIREITA';
+                    if (!hasLeft) result += '\nECOGRAFIA DA REGIÃO AXILAR ESQUERDA';
+                    return result;
+                }
+                return text;
+            }
+
+            function setCellValue(r,c,val){
+                const d = getCellDiv(r,c);
+                if (d){ let v = (val!==undefined && val!==null) ? String(val) : ''; v = v.replace(/\u00A0/g,' ').replace(/\u200B/g,''); v = expandMamaria(v); d.textContent = v; }
+            }
+
+            function parsePlainTextToMatrix(text){
+                const t = text.replace(/\r/g,''); const lines = t.split('\n');
+                let delim = '\t'; const sample = lines.slice(0,4).join('\n');
+                if (!sample.includes('\t') && sample.includes(';')) delim=';'; else if (!sample.includes('\t') && sample.includes(',') && !sample.includes(';')) delim=',';
+                return lines.map(line=>line.split(delim));
+            }
+
+            function parseHTMLTable(htmlString){
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlString, 'text/html');
+                    const table = doc.querySelector('table') || doc.querySelector('div[contenteditable] table');
+                    if (table){
+                        const out=[]; table.querySelectorAll('tr').forEach(tr=>{ const row=[]; tr.querySelectorAll('th,td').forEach(cell=>{ let txt = cell.innerText || cell.textContent || ''; txt = txt.replace(/\r/g,''); row.push(txt); }); out.push(row); });
+                        return out;
+                    }
+                    return null;
+                } catch(e){ return null; }
+            }
+
+            function pasteMatrixAt(startR,startC,matrix){
+                for (let i=0;i<matrix.length;i++){
+                    const row = matrix[i];
+                    for (let j=0;j<row.length;j++){
+                        const r = startR + i, c = startC + j;
+                        if (r>=ROWS || c>=COLS) continue;
+                        let cellText = (row[j]!==undefined && row[j]!==null) ? String(row[j]) : '';
+                        cellText = cellText.replace(/\u00A0/g,' ').replace(/\u200B/g,'').trim();
+                        setCellValue(r,c,cellText);
+                    }
+                }
+            }
+
+            function pasteTextAt(startR,startC,text){ pasteMatrixAt(startR,startC,parsePlainTextToMatrix(text)); }
+
+            function populateSelects(){
+                [selAAA,selBBB,selCCC,selDDD,selKK].forEach(sel => {
+                    sel.innerHTML='';
+                    for (let c=0;c<COLS;c++){ const opt=document.createElement('option'); opt.value=letter(c); opt.textContent=letter(c); sel.appendChild(opt); }
+                });
+                trySelect(selAAA,'B'); trySelect(selBBB,'N'); trySelect(selCCC,'E'); trySelect(selDDD,'F'); trySelect(selKK,'K');
+            }
+
+            function trySelect(sel,ch){ for (let i=0;i<sel.options.length;i++) if (sel.options[i].value === ch) { sel.selectedIndex = i; return; } }
+
+            function clearGrid(){ for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) setCellValue(r,c,''); }
+
+            function fillSample(){
+                clearGrid();
+                setCellValue(0,1,'José da Silva');
+                setCellValue(0,13,'10/02/2026 09:30');
+                setCellValue(0,4,'12345');
+                setCellValue(0,5,'ECOGRAFIA DO ABDOMEN TOTAL');
+                setCellValue(0,10,'(51) 99999-9999');
+            }
+
+            function extractExams(text){
+                if (!text) return [];
+                const parts = text.split(/\n/);
+                return parts.map(p => p.trim()).filter(p => p && (p.toUpperCase().includes('ECO') || p.toUpperCase().includes('RX')));
+            }
+
+            function searchExam(examName){
+                if (!examName) return null;
+                const norm = removeDiacritics(examName.toUpperCase().trim());
+                for (const [key, value] of Object.entries(examDatabase)){
+                    const keyNorm = removeDiacritics(key.toUpperCase());
+                    if (keyNorm === norm || keyNorm.includes(norm) || norm.includes(keyNorm)){
+                        return value;
+                    }
+                }
+                return null;
+            }
+
+            function extractPhones(text){
+                if (!text) return [];
+                const parts = text.split(/[,;\/\|\n\r]+/);
+                const phones = [];
+                for (let p of parts){
+                    p = p.trim();
+                    if (!p) continue;
+                    let digits = p.replace(/\D/g, '');
+                    digits = digits.replace(/^0+/, '');
+                    if (!digits) continue;
+                    if (digits.startsWith('55')){
+                        phones.push(digits);
+                    } else if (digits.length >= 9){
+                        phones.push('55' + '51' + digits);
+                    }
+                }
+                return Array.from(new Set(phones));
+            }
+
+            btnPasteClipboard.addEventListener('click', async function(){
+                const startR = selected.r, startC = selected.c;
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (!text) { alert('Área de transferência vazia.'); return; }
+                    pasteTextAt(startR,startC,text);
+                } catch(e){
+                    alert('Não foi possível acessar a área de transferência automaticamente. Cole numa célula com Ctrl+V.');
+                }
+            });
+
+            btnClearGrid.addEventListener('click', clearGrid);
+            btnSample.addEventListener('click', fillSample);
+
+            btnScanPreps.addEventListener('click', function(){
+                prepList.innerHTML = '';
+                const col = selDDD.value;
+                const colIdx = col.charCodeAt(0) - 65;
+                const exams = new Map();
+                
+                for (let r = 0; r < ROWS; r++){
+                    const val = getCellValue(r, colIdx);
+                    if (!val) continue;
+                    const exList = extractExams(val);
+                    exList.forEach(ex => {
+                        if (!exams.has(ex)) exams.set(ex, 0);
+                        exams.set(ex, exams.get(ex) + 1);
+                    });
+                }
+                
+                const sorted = Array.from(exams.keys()).sort();
+                sorted.forEach(exam => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '8px';
+                    div.style.padding = '8px';
+                    div.style.background = '#f9f9f9';
+                    div.style.borderRadius = '4px';
+                    
+                    const label = document.createElement('div');
+                    label.style.marginBottom = '4px';
+                    label.style.fontWeight = 'bold';
+                    label.textContent = exam + ' (' + exams.get(exam) + 'x)';
+                    
+                    const ta = document.createElement('textarea');
+                    ta.dataset.exam = exam;
+                    ta.style.width = '100%';
+                    ta.style.height = '60px';
+                    ta.style.padding = '6px';
+                    ta.style.borderRadius = '4px';
+                    ta.style.border = '1px solid #ddd';
+                    ta.placeholder = 'Adicione o preparo...';
+                    
+                    if (chkAutoPrep.checked){
+                        const found = searchExam(exam);
+                        if (found){
+                            ta.value = found.prep;
+                            ta.style.borderColor = '#4caf50';
+                        }
+                    }
+                    
+                    div.appendChild(label);
+                    div.appendChild(ta);
+                    prepList.appendChild(div);
+                });
+            });
+
+            btnClearPreps.addEventListener('click', function(){ prepList.innerHTML = ''; });
+
+            btnGenerate.addEventListener('click', function(){
+                const messages = [];
+                const colPatient = selAAA.value.charCodeAt(0) - 65;
+                const colDate = selBBB.value.charCodeAt(0) - 65;
+                const colReq = selCCC.value.charCodeAt(0) - 65;
+                const colExam = selDDD.value.charCodeAt(0) - 65;
+                const colPhone = selKK.value.charCodeAt(0) - 65;
+                
+                for (let r = 0; r < ROWS; r++){
+                    const patient = getCellValue(r, colPatient);
+                    const date = getCellValue(r, colDate);
+                    const req = getCellValue(r, colReq);
+                    const examRaw = getCellValue(r, colExam);
+                    const phoneRaw = getCellValue(r, colPhone);
+                    
+                    if (!patient && !date && !req && !examRaw && !phoneRaw) continue;
+                    
+                    const exams = extractExams(examRaw);
+                    const phones = extractPhones(phoneRaw);
+                    
+                    let examList = exams.join('\n');
+                    let prep = '';
+                    
+                    if (exams.length > 0){
+                        const preps = exams.map(ex => searchExam(ex)).filter(p => p);
+                        if (preps.length > 0){
+                            preps.sort((a, b) => b.fasting - a.fasting);
+                            prep = preps[0].prep;
+                        }
+                    }
+                    
+                    const hour = new Date().getHours();
+                    let greetings;
+                    if (hour >= 6 && hour <= 11) greetings = phrasesBank.greetings.morning;
+                    else if (hour >= 12 && hour <= 17) greetings = phrasesBank.greetings.afternoon;
+                    else greetings = phrasesBank.greetings.night;
+                    
+                    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+                    let treatment = phrasesBank.treatments[Math.floor(Math.random() * phrasesBank.treatments.length)];
+                    treatment = treatment.replace(/{NOME}/g, patient).replace(/{PRIMEIRO_NOME}/g, patient.split(' ')[0]);
+                    
+                    const identification = phrasesBank.identifications[Math.floor(Math.random() * phrasesBank.identifications.length)];
+                    const intro = phrasesBank.introductions[Math.floor(Math.random() * phrasesBank.introductions.length)];
+                    const confirmation = phrasesBank.confirmations[Math.floor(Math.random() * phrasesBank.confirmations.length)];
+                    const saving = phrasesBank.savingContact[Math.floor(Math.random() * phrasesBank.savingContact.length)];
+                    
+                    let msg = greeting + '\n\n' + treatment + '\n\n' + identification + '\n\n' + intro + '\n\n';
+                    msg += 'Paciente: ' + patient + '\n';
+                    msg += 'Data/Horário: ' + date + '\n';
+                    msg += 'Solicitação: ' + req + '\n\n';
+                    msg += 'Exame(s):\n' + examList + '\n';
+                    if (prep) msg += '\nPreparo:\n' + prep + '\n';
+                    if (extraMsg.value) msg += '\n' + extraMsg.value + '\n';
+                    msg += '\n' + confirmation + '\n\n' + saving;
+                    
+                    messages.push({text: msg, phones: phones});
+                }
+                
+                messagesDiv.innerHTML = '';
+                countMsg.textContent = messages.length + ' mensagens';
+                
+                messages.forEach((msg, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'message';
+                    
+                    const txt = document.createElement('div');
+                    txt.className = 'msg-text';
+                    txt.textContent = msg.text;
+                    
+                    const btns = document.createElement('div');
+                    btns.className = 'controls-vert';
+                    
+                    const btnCopy = document.createElement('button');
+                    btnCopy.textContent = 'Copiar';
+                    btnCopy.addEventListener('click', async () => {
+                        await navigator.clipboard.writeText(msg.text);
+                        btnCopy.textContent = '✓';
+                        setTimeout(() => btnCopy.textContent = 'Copiar', 1500);
+                    });
+                    btns.appendChild(btnCopy);
+                    
+                    if (msg.phones.length > 0){
+                        const pDiv = document.createElement('div');
+                        pDiv.className = 'phone-list';
+                        msg.phones.forEach(phone => {
+                            const pb = document.createElement('button');
+                            pb.className = 'phone-btn';
+                            pb.textContent = 'WhatsApp: ' + phone;
+                            pb.addEventListener('click', () => {
+                                const url = 'https://web.whatsapp.com/send?phone=' + phone + '&text=' + encodeURIComponent(msg.text);
+                                window.open(url, '_blank');
+                            });
+                            pDiv.appendChild(pb);
+                        });
+                        btns.appendChild(pDiv);
+                    }
+                    
+                    div.appendChild(txt);
+                    div.appendChild(btns);
+                    messagesDiv.appendChild(div);
+                });
+            });
+
+            btnCopyAll.addEventListener('click', async function(){
+                const msgs = Array.from(messagesDiv.querySelectorAll('.msg-text')).map(el => el.textContent);
+                if (msgs.length === 0){
+                    alert('Nenhuma mensagem para copiar');
+                    return;
+                }
+                await navigator.clipboard.writeText(msgs.join('\n\n---\n\n'));
+                alert('Copiado!');
+            });
+
+            btnDownloadAll.addEventListener('click', function(){
+                const msgs = Array.from(messagesDiv.querySelectorAll('.msg-text')).map(el => el.textContent);
+                if (msgs.length === 0){
+                    alert('Nenhuma mensagem para baixar');
+                    return;
+                }
+                const text = msgs.join('\n\n---\n\n');
+                const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mensagens_' + new Date().toISOString().split('T')[0] + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+
+            buildHeader();
+            buildBody();
+            populateSelects();
+        })();
+    </script>
+</body>
+</html>
